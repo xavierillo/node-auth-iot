@@ -138,6 +138,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-data.sqlite3
+#data.sqlite3
 npm-debug.log*
 yarn-error.log*

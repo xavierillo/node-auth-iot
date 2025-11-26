@@ -4,6 +4,7 @@ import 'dotenv/config';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import iotRoutes from './routes/iot.js';
+import iotLedRoutes from './routes/iot_led.js';
 import auth from './middleware/auth.js';
 
 const app = express();
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/', profileRoutes);
 app.use('/iot', iotRoutes);
+app.use('/api', iotLedRoutes);
 
 // Example protected route
 app.get('/protected-ping', auth, (req, res) => {

@@ -5,7 +5,7 @@ import auth from '../middleware/auth.js';
 const router = Router();
 
 // GET /leds -> devuelve todos los LEDs
-router.get('/leds', auth, async (req, res) => {
+router.get('/leds', async (req, res) => {
     try {
         const leds = await db('leds').select('id', 'name', 'state');
         

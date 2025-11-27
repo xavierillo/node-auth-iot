@@ -7,8 +7,11 @@ const router = Router();
 // GET /leds -> devuelve todos los LEDs
 router.get('/leds', async (req, res) => {
     try {
-        const leds = await db('leds').select('id', 'name', 'state');
-        
+        const rows = await db("leds").select("id", "name", "state");
+        const leds = rows.map((r) => ({
+            ...r,
+            state: !!r.state, // convierte 0/1 a false/true
+        }));
         res.json(leds);
     } catch (error) {
         console.error("Error al obtener LEDs:", error);
@@ -22,7 +25,10 @@ router.get("/leds/:id", async (req, res) => {
     try {
         const led = await db("leds").where({ id }).first();
         if (!led) return res.status(404).json({ error: "LED no encontrado" });
-        res.json(led);
+        res.json({
+            ...led,
+            state: !!led.state,
+        });
     } catch (error) {
         console.error("Error al obtener LED:", error);
         res.status(500).json({ error: "Error al obtener LED" });
@@ -49,7 +55,11 @@ router.put("/leds/:id", async (req, res) => {
             .update({ state, updated_at: db.fn.now() });
 
         const updated = await db("leds").where({ id }).first();
-        res.json(updated);
+
+        res.json({
+            ...updated,
+            state: !!updated.state,
+        });
     } catch (error) {
         console.error("Error al actualizar LED:", error);
         res.status(500).json({ error: "Error al actualizar LED" });

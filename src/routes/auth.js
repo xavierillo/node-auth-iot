@@ -1,12 +1,13 @@
 import { Router } from "express";
 import db from "../db/knex.js";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { sendRecoveryCodeEmail } from "../services/emailService.js"; // import
+import jwt from 'jsonwebtoken';
+import { sendRecoveryCodeEmail } from "../services/emailService.js";
+const JWT_SECRET = process.env.JWT_SECRET || 'dev_secret_change_me';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+
 // Cantidad de rondas para bcrypt
 const SALT_ROUNDS = 10;
 
@@ -54,6 +55,7 @@ router.post("/register", async (req, res) => {
             last_name,
             email,
             password_hash,
+            role: "user"
         });
 
         return res.status(201).json({
@@ -195,6 +197,8 @@ router.post("/login", async (req, res) => {
         }
 
         const user = await db("users").where({ email }).first();
+
+
         if (!user) {
             return res
                 .status(401)
@@ -207,14 +211,25 @@ router.post("/login", async (req, res) => {
                 .status(401)
                 .json({ success: false, message: "Invalid credentials" });
         }
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+            },
+            JWT_SECRET,
+            { expiresIn: JWT_EXPIRES_IN }
+        );
 
-        const token = jwt.sign({ sub: user.id }, JWT_SECRET, {
-            expiresIn: JWT_EXPIRES_IN,
-        });
         return res.json({
             success: true,
-            token,
-            user: { id: user.id, name: user.name, email: user.email },
+            token: token,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role    // <-- te conviene devolverlo aquí
+            },
         });
     } catch (e) {
         console.error(e);

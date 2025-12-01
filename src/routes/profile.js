@@ -6,7 +6,7 @@ const router = Router();
 
 // GET /profile (protected)
 router.get('/profile', auth, async (req, res) => {
-	const user = await db('users').where({ id: req.userId }).first().select('id', 'name', 'email');
+	const user = await db('users').where({ id: req.userId }).first().select('id', 'name', 'email', 'role');
 
 	if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 

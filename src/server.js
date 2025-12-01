@@ -7,6 +7,7 @@ import iotRoutes from "./routes/iot.js";
 import iotLedRoutes from "./routes/iot_led.js";
 import iotRingRoutes from "./routes/iot_ring.js";
 import auth from "./middleware/auth.js";
+import adminUsersRoutes from "./routes/admin_users.js"; // 👈 nuevo
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,6 +24,9 @@ app.use("/", profileRoutes);
 app.use("/iot", iotRoutes);
 app.use("/api", iotLedRoutes);
 app.use("/api/ring", iotRingRoutes);
+
+// Rutas de administración de usuarios (todas protegidas por auth+isAdmin)
+app.use("/api/admin/users", adminUsersRoutes);
 
 // Example protected route
 app.get("/protected-ping", auth, (req, res) => {
